@@ -9,7 +9,7 @@ router.get("/random", function (req, res, next) {
 //Signup a new username
 router.post("/api/exercise/new-user", (req, res) => {
   const { username } = req.body;
-  User.findOne({ username: username }, (err, userFound) => {
+  User.findOne({ username: username, "count": 0, "log":[] }, (err, userFound) => {
     if (userFound) return res.json({ error: "Username already taken!" });
     const user = new User({
       username: username,
@@ -32,6 +32,29 @@ router.get("/api/exercise/users", (req, res)=>{
   });
 });
 
-
+//add exercise by a userID
+router.post("/api/exercise/add", (req, res)=>{
+  const { userId, description, duration, date } = req.body;
+  User.findOne({"_id": userId}, (err, userFound)=>{
+    if(err) return res.json({"error": "Could not find a user with this userId"});
+    const exercise = {
+      "description": description,
+      "duration": duration,
+      "date": date
+    };
+    userFound.log.push(exercise);
+    
+    userFound.save((err, data)=>{
+      if(err) return res.json({"error": "Error saving data"});
+      const lenOfLog = data.log.length;
+      return res.json({"username": data.username, 
+                       "description": data.log[lenOfLog-1].description,
+                      "duration": data.log[lenOfLog-1].duration,
+                      "_id": data._id,
+                      "date": data.log[lenOfLog-1].date 
+                    });
+    })
+  })
+})
 
 module.exports = router;
