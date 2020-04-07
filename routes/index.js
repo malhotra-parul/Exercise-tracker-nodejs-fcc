@@ -56,6 +56,53 @@ router.post("/api/exercise/add", (req, res)=>{
                     });
     })
   })
-})
+});
+//view complete exercise log for any userId
+router.get("/api/exercise/log",(req, res)=>{
+  const { userId, from, to, limit } = req.query;
+
+  if(!userId) return res.json({"error": "Please supply userId in query."});
+
+  User.findOne({"_id": userId}, (err, userFound )=>{
+    if(err) return res.json({"error": "No such Userid found!"});
+    if(from && to && limit){
+      var todate = new Date(to);
+      todate.setDate(todate.getDate()+1);
+      const selection = userFound.log.filter((exercise, i)=>{
+        return (exercise.date >= new Date(from) && exercise.date <= todate);
+      });
+      return res.json({ "_id": userId,
+                        "username": userFound.username,
+                        "count": limit,
+                        "log": selection.slice(0, limit),
+                        "from": new Date(from),
+                        "to": new Date(to)
+      });
+    }
+    else if(from && to){
+      var todate = new Date(to);
+      todate.setDate(todate.getDate()+1);
+      const selection = userFound.log.filter((exercise, i)=>{
+        return (exercise.date >= new Date(from) && exercise.date <= todate);
+      })
+      return res.json({ "_id": userId,
+                        "username": userFound.username,
+                        "count": selection.length,
+                        "log": selection,
+                        "from": new Date(from),
+                        "to": new Date(to)
+      });
+    }else if(limit){
+      
+      return res.json({ "_id": userId,
+                        "username": userFound.username,
+                        "count": limit,
+                        "log": userFound.log.slice(0, limit) });
+    }
+    else{
+    return res.json(userFound);
+    }
+  })
+} )
 
 module.exports = router;
