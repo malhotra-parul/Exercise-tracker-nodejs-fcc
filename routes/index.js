@@ -6,7 +6,7 @@ var router = express.Router();
 router.get("/random", function (req, res, next) {
   res.json({ title: "Express" });
 });
-
+//Signup a new username
 router.post("/api/exercise/new-user", (req, res) => {
   const { username } = req.body;
   User.findOne({ username: username }, (err, userFound) => {
@@ -22,5 +22,16 @@ router.post("/api/exercise/new-user", (req, res) => {
     });
   });
 });
+
+//get all signedup users
+router.get("/api/exercise/users", (req, res)=>{
+  User.find({},{"username": 1, "_id": 1}, (err, users)=>{
+    if(err) return res.json({"error": "No Users found!"});
+    // console.log(users);
+    return res.send(users);
+  });
+});
+
+
 
 module.exports = router;
