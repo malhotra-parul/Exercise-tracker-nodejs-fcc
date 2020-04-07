@@ -43,6 +43,7 @@ router.post("/api/exercise/add", (req, res)=>{
       "date": date
     };
     userFound.log.push(exercise);
+    userFound.count = userFound.log.length;
     
     userFound.save((err, data)=>{
       if(err) return res.json({"error": "Error saving data"});
