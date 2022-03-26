@@ -17,6 +17,6 @@
     "morgan": "~1.9.1",
     "nodemon": "^2.0.2",
     "shortid": "^2.2.15",
-    "minimist": ">=0.2.1"
+    "minimist": ">=1.2.6"
   }
 }
